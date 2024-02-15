@@ -5,13 +5,17 @@ import java.util.ArrayList;
 import java.util.Scanner;
 public class MovieCollection {
     private ArrayList<Movie> movieList;
+    private ArrayList<String> movieTitleList;
+    private ArrayList<String> movieCastList;
     private Scanner scanner;
     public MovieCollection() {
         movieList = new ArrayList<>();
         scanner = new Scanner(System.in);
+        start();
     }
 
     public void start() {
+        readData();
         System.out.println("Welcome to the movie collection!");
         String menuOption = "";
 
@@ -36,7 +40,25 @@ public class MovieCollection {
     }
 
     public void searchTitles() {
+        System.out.println("Enter title search term: ");
+        String term = scanner.nextLine();
+        ArrayList<String> newList = new ArrayList<>();
+        for(String title : movieTitleList) {
+            if(title.toLowerCase().indexOf(term.toLowerCase()) != -1) {
+                newList.add(title);
+            }
+        }
+        for(int i = 0; i < newList.size(); i++) {
+            System.out.println((i + 1) + newList.get(i));
+        }
+        if(newList.size() == 0) {
+            System.out.println("No movie titles match that search term!");
+        } else {
+            System.out.println("Which movie would you like to learn more about?");
+            System.out.println("Enter number: ");
+            int num = scanner.nextInt();
 
+        }
     }
 
     public void searchCast() {
@@ -63,9 +85,49 @@ public class MovieCollection {
         } catch (IOException exception) {
             System.out.println(exception.getMessage());
         }
+        for(Movie movie : movieList) {
+            movieTitleList.add(movie.getTitle());
+            movieCastList.add(movie.getCast());
+        }
+
+//        for(int i = 1; i < movieTitleList.size(); i++) {
+//            int index = i;
+//            String removed = movieTitleList.get(i);
+//            while(index > 0 && (removed.compareTo(movieTitleList.get(index - 1)) < 0)) {
+//                movieTitleList.set(index, movieTitleList.get(index - 1));
+//                index--;
+//            }
+//            movieTitleList.set(index, removed);
+//        }
+//        for(int i = 1; i < movieCastList.size(); i++) {
+//            int index = i;
+//            String removed = movieCastList.get(i);
+//            while(index > 0 && (removed.compareTo(movieCastList.get(index - 1)) < 0)) {
+//                movieCastList.set(index, movieCastList.get(index - 1));
+//                index--;
+//            }
+//            movieCastList.set(index, removed);
+//        }
+
+
+
+        for(int i = 1; i < movieList.size(); i++) {
+            int index = i;
+            Movie removed = movieList.get(i);
+            while(index > 0 && (removed.getTitle().compareTo(movieList.get(index - 1).getTitle()) < 0)) {
+                movieList.set(index, movieList.get(index - 1));
+                index--;
+            }
+            movieList.set(index, removed);
+        }
+        for(int i = 1; i < movieList.size(); i++) {
+            int index = i;
+            Movie removed = movieList.get(i);
+            while(index > 0 && (removed.getCast().compareTo(movieList.get(index - 1).getCast()) < 0)) {
+                movieList.set(index, movieList.get(index - 1));
+                index--;
+            }
+            movieList.set(index, removed);
+        }
     }
-
-
-
-
 }
