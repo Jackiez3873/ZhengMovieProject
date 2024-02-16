@@ -164,6 +164,6 @@ public class MovieCollection {
         } catch (IOException exception) {
             System.out.println(exception.getMessage());
         }
-
+        System.out.println(actorsList);
     }
 }
