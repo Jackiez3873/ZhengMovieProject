@@ -97,10 +97,21 @@ public class MovieCollection {
             int number = scanner.nextInt();
             scanner.nextLine();
             for(int i = 0; i < movieList.size(); i++) {
-                if(movieList.get(i).getCast().contains(newList.get(number - 1).toLowerCase())) {
+                if(movieList.get(i).getCast().toLowerCase().contains(newList.get(number - 1).toLowerCase())) {
                     newMovieList.add(movieList.get(i));
-                    System.out.println((i + 1) + ". " + movieList.get(i).getTitle());
                 }
+            }
+            for(int i = 1; i < newMovieList.size(); i++) {
+                int index = i;
+                Movie removed = newMovieList.get(i);
+                while(index > 0 && (removed.getTitle().compareTo(newMovieList.get(index - 1).getTitle()) < 0)) {
+                    newMovieList.set(index, newMovieList.get(index - 1));
+                    index--;
+                }
+                newMovieList.set(index, removed);
+            }
+            for(int i = 0; i < newMovieList.size(); i++) {
+                System.out.println((i + 1) + ". " + newMovieList.get(i).getTitle());
             }
             System.out.println("Which movie would you like to learn more about?");
             System.out.println("Enter number: ");
@@ -128,42 +139,33 @@ public class MovieCollection {
                 String overview = splitData[3];
                 String runTime = splitData[4];
                 String userRating = splitData[5];
-                for(int i = 0; i < movieList.size(); i++) {
-
-                    while (fileScanner.hasNext()) {
-                        String actors = fileScanner.nextLine();
-                        String[] actorList = actors.split("\\|");
-                        boolean isDuplicate = false;
-                        for (int j = 0; j < actorList.length; j++) {
-                            for (int k = 0; k < actorsList.size(); k++) {
-                                if (actorList[j].equals(actorsList.get(k))) {
-                                    isDuplicate = true;
-                                }
-                            }
-                            if (isDuplicate == false) {
-                                actorsList.add(actorList[j]);
-                            }
+                String[] actorList = cast.split("\\|");
+                boolean isDuplicate = false;
+                for (int j = 0; j < actorList.length; j++) {
+                    for (int k = 0; k < actorsList.size(); k++) {
+                        if (actorList[j].equals(actorsList.get(k))) {
+                            isDuplicate = true;
                         }
                     }
-
-                }
-                for(int i = 1; i < actorsList.size(); i++) {
-                    int index = i;
-                    String removed = actorsList.get(i);
-                    while(index > 0 && (removed.compareTo(actorsList.get(index - 1)) < 0)) {
-                        actorsList.set(index, actorsList.get(index - 1));
-                        index--;
+                    if (isDuplicate == false) {
+                        actorsList.add(actorList[j]);
                     }
-                    actorsList.set(index, removed);
+                    isDuplicate = false;
                 }
-
-
                 Movie movie = new Movie(title, cast, director, overview, runTime, userRating);
                 movieList.add(movie);
             }
         } catch (IOException exception) {
             System.out.println(exception.getMessage());
         }
-        System.out.println(actorsList);
+        for(int i = 1; i < actorsList.size(); i++) {
+            int index = i;
+            String removed = actorsList.get(i);
+            while(index > 0 && (removed.compareTo(actorsList.get(index - 1)) < 0)) {
+                actorsList.set(index, actorsList.get(index - 1));
+                index--;
+            }
+            actorsList.set(index, removed);
+        }
     }
 }
