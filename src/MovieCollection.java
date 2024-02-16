@@ -5,11 +5,11 @@ import java.util.ArrayList;
 import java.util.Scanner;
 public class MovieCollection {
     private ArrayList<Movie> movieList;
-    private ArrayList<String> movieTitleList;
-    private ArrayList<String> movieCastList;
+    private ArrayList<String> actorsList;
     private Scanner scanner;
     public MovieCollection() {
         movieList = new ArrayList<>();
+        actorsList = new ArrayList<>();
         scanner = new Scanner(System.in);
         start();
     }
@@ -40,16 +40,25 @@ public class MovieCollection {
     }
 
     public void searchTitles() {
+        for(int i = 1; i < movieList.size(); i++) {
+            int index = i;
+            Movie removed = movieList.get(i);
+            while(index > 0 && (removed.getTitle().compareTo(movieList.get(index - 1).getTitle()) < 0)) {
+                movieList.set(index, movieList.get(index - 1));
+                index--;
+            }
+            movieList.set(index, removed);
+        }
         System.out.println("Enter title search term: ");
         String term = scanner.nextLine();
-        ArrayList<String> newList = new ArrayList<>();
-        for(String title : movieTitleList) {
-            if(title.toLowerCase().indexOf(term.toLowerCase()) != -1) {
-                newList.add(title);
+        ArrayList<Movie> newList = new ArrayList<>();
+        for(Movie movie : movieList) {
+            if(movie.getTitle().toLowerCase().indexOf(term.toLowerCase()) != -1) {
+                newList.add(movie);
             }
         }
         for(int i = 0; i < newList.size(); i++) {
-            System.out.println((i + 1) + newList.get(i));
+            System.out.println((i + 1) + ". " + newList.get(i).getTitle());
         }
         if(newList.size() == 0) {
             System.out.println("No movie titles match that search term!");
@@ -57,12 +66,53 @@ public class MovieCollection {
             System.out.println("Which movie would you like to learn more about?");
             System.out.println("Enter number: ");
             int num = scanner.nextInt();
-
+            System.out.println("Title: " + newList.get(num - 1).getTitle());
+            System.out.println("Runtime: " + newList.get(num - 1).getRunTime());
+            System.out.println("Directed by: " + newList.get(num - 1).getDirector());
+            System.out.println("Cast: " + newList.get(num - 1).getCast());
+            System.out.println("Overview: " + newList.get(num - 1).getOverview());
+            System.out.println("User rating: " + newList.get(num - 1).getUserRating());
+            scanner.nextLine();
         }
     }
 
     public void searchCast() {
-
+        System.out.println("Enter a person to search for(first or last name): ");
+        String name = scanner.nextLine();
+        ArrayList<String> newList = new ArrayList<>();
+        ArrayList<Movie> newMovieList = new ArrayList<>();
+        for(String actor : actorsList) {
+            if(actor.toLowerCase().indexOf(name.toLowerCase()) != -1) {
+                newList.add(actor);
+            }
+        }
+        for(int i = 0; i < newList.size(); i++) {
+            System.out.println((i + 1) + ". " + newList.get(i));
+        }
+        if(newList.size() == 0) {
+            System.out.println("No results match your search");
+        } else {
+            System.out.println("Which would you like to see all movies for?");
+            System.out.println("Enter number: ");
+            int number = scanner.nextInt();
+            scanner.nextLine();
+            for(int i = 0; i < movieList.size(); i++) {
+                if(movieList.get(i).getCast().contains(newList.get(number - 1).toLowerCase())) {
+                    newMovieList.add(movieList.get(i));
+                    System.out.println((i + 1) + ". " + movieList.get(i).getTitle());
+                }
+            }
+            System.out.println("Which movie would you like to learn more about?");
+            System.out.println("Enter number: ");
+            int num = scanner.nextInt();
+            System.out.println("Title: " + newMovieList.get(num - 1).getTitle());
+            System.out.println("Runtime: " + newMovieList.get(num - 1).getRunTime());
+            System.out.println("Directed by: " + newMovieList.get(num - 1).getDirector());
+            System.out.println("Cast: " + newMovieList.get(num - 1).getCast());
+            System.out.println("Overview: " + newMovieList.get(num - 1).getOverview());
+            System.out.println("User rating: " + newMovieList.get(num - 1).getUserRating());
+            scanner.nextLine();
+        }
     }
 
     private void readData() {
@@ -76,8 +126,37 @@ public class MovieCollection {
                 String cast = splitData[1];
                 String director = splitData[2];
                 String overview = splitData[3];
-                int runTime = Integer.parseInt(splitData[4]);
-                double userRating = Double.parseDouble(splitData[5]);
+                String runTime = splitData[4];
+                String userRating = splitData[5];
+                for(int i = 0; i < movieList.size(); i++) {
+
+                    while (fileScanner.hasNext()) {
+                        String actors = fileScanner.nextLine();
+                        String[] actorList = actors.split("\\|");
+                        boolean isDuplicate = false;
+                        for (int j = 0; j < actorList.length; j++) {
+                            for (int k = 0; k < actorsList.size(); k++) {
+                                if (actorList[j].equals(actorsList.get(k))) {
+                                    isDuplicate = true;
+                                }
+                            }
+                            if (isDuplicate == false) {
+                                actorsList.add(actorList[j]);
+                            }
+                        }
+                    }
+
+                }
+                for(int i = 1; i < actorsList.size(); i++) {
+                    int index = i;
+                    String removed = actorsList.get(i);
+                    while(index > 0 && (removed.compareTo(actorsList.get(index - 1)) < 0)) {
+                        actorsList.set(index, actorsList.get(index - 1));
+                        index--;
+                    }
+                    actorsList.set(index, removed);
+                }
+
 
                 Movie movie = new Movie(title, cast, director, overview, runTime, userRating);
                 movieList.add(movie);
@@ -85,49 +164,6 @@ public class MovieCollection {
         } catch (IOException exception) {
             System.out.println(exception.getMessage());
         }
-        for(Movie movie : movieList) {
-            movieTitleList.add(movie.getTitle());
-            movieCastList.add(movie.getCast());
-        }
 
-//        for(int i = 1; i < movieTitleList.size(); i++) {
-//            int index = i;
-//            String removed = movieTitleList.get(i);
-//            while(index > 0 && (removed.compareTo(movieTitleList.get(index - 1)) < 0)) {
-//                movieTitleList.set(index, movieTitleList.get(index - 1));
-//                index--;
-//            }
-//            movieTitleList.set(index, removed);
-//        }
-//        for(int i = 1; i < movieCastList.size(); i++) {
-//            int index = i;
-//            String removed = movieCastList.get(i);
-//            while(index > 0 && (removed.compareTo(movieCastList.get(index - 1)) < 0)) {
-//                movieCastList.set(index, movieCastList.get(index - 1));
-//                index--;
-//            }
-//            movieCastList.set(index, removed);
-//        }
-
-
-
-        for(int i = 1; i < movieList.size(); i++) {
-            int index = i;
-            Movie removed = movieList.get(i);
-            while(index > 0 && (removed.getTitle().compareTo(movieList.get(index - 1).getTitle()) < 0)) {
-                movieList.set(index, movieList.get(index - 1));
-                index--;
-            }
-            movieList.set(index, removed);
-        }
-        for(int i = 1; i < movieList.size(); i++) {
-            int index = i;
-            Movie removed = movieList.get(i);
-            while(index > 0 && (removed.getCast().compareTo(movieList.get(index - 1).getCast()) < 0)) {
-                movieList.set(index, movieList.get(index - 1));
-                index--;
-            }
-            movieList.set(index, removed);
-        }
     }
 }
